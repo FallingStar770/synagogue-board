@@ -1,0 +1,223 @@
+/* TV display — authored at 1920×1080 and scaled uniformly (Full HD and 4K, never scrolls). */
+:root { --navy: #0e2a47; --ink: #1b2a3a; --maroon: #7b1d2e; --gold: #c9a45c; --gold-2: #ecd39a; --cream: #fff9ec; --cream-2: #f3e5c4 }
+* { box-sizing: border-box }
+html, body, #root { margin: 0; height: 100%; background: #000; overflow: hidden; cursor: none }
+body { font-family: 'Heebo', Arial, sans-serif; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility }
+h1, h2, h3, p { margin: 0 }
+
+.stage { position: absolute; top: 50%; left: 50%; overflow: hidden; color: var(--ink); direction: rtl; font-size: calc(32px * var(--fs, 1)) }
+.stage::after { content: ''; position: absolute; inset: 0; pointer-events: none; border: 16px solid transparent; z-index: 20;
+  border-image: linear-gradient(160deg, #2c76c9, #0f3f7c 40%, #1b5aa6 70%, #0c2f5e) 1; box-shadow: inset 0 0 0 18px rgba(201, 164, 92, .55) }
+.bg-night { background: radial-gradient(ellipse at 50% 15%, #2a5c88 0%, #14365a 40%, #081627 100%) }
+.bg-night::before { content: ''; position: absolute; inset: 0; opacity: .35;
+  background-image: radial-gradient(1.5px 1.5px at 12% 18%, #fff 50%, transparent 51%), radial-gradient(1.5px 1.5px at 72% 12%, #fff 50%, transparent 51%),
+  radial-gradient(1px 1px at 35% 8%, #fff 50%, transparent 51%), radial-gradient(1px 1px at 88% 30%, #fff 50%, transparent 51%), radial-gradient(1.5px 1.5px at 55% 22%, #fff 50%, transparent 51%) }
+.bg-sky { background: linear-gradient(180deg, #3d8fd6 0%, #8cc6f0 55%, #dff0fb 100%) }
+.bg-sky::before { content: ''; position: absolute; inset: 0; opacity: .7;
+  background: radial-gradient(ellipse 260px 70px at 18% 22%, #fff 0%, transparent 70%), radial-gradient(ellipse 340px 80px at 78% 16%, #fff 0%, transparent 70%), radial-gradient(ellipse 300px 60px at 60% 80%, rgba(255, 255, 255, .7) 0%, transparent 70%) }
+.bg-stone { background: linear-gradient(180deg, #e8dabd, #cdb88f) }
+.bg-stone::before { content: ''; position: absolute; inset: 0; opacity: .35;
+  background: repeating-linear-gradient(0deg, transparent 0 88px, rgba(120, 95, 55, .5) 88px 90px), repeating-linear-gradient(90deg, transparent 0 178px, rgba(120, 95, 55, .35) 178px 180px) }
+
+/* ---------- header ribbon (clock) */
+.ribbon { position: absolute; top: 34px; left: 50%; transform: translateX(-50%); width: 1180px; height: 112px; z-index: 5;
+  display: grid; grid-template-columns: 1fr 360px 1fr; align-items: center; padding: 0 70px;
+  background: linear-gradient(180deg, #fffaf0 0%, #f4e4bd 100%); border-radius: 0 0 26px 26px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .35), inset 0 -3px 0 rgba(201, 164, 92, .7) }
+.ribbon::before, .ribbon::after { content: ''; position: absolute; top: 0; width: 70px; height: 112px; background: linear-gradient(180deg, #ecd8a6, #d9bd7c) }
+.ribbon::before { right: -50px; clip-path: polygon(0 0, 100% 0, 60% 50%, 100% 100%, 0 100%) }
+.ribbon::after { left: -50px; clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 40% 50%) }
+.rib-center { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding-top: 6px }
+.rib-name { background: var(--primary, var(--navy)); color: #fff; padding: 0 26px 2px; border-radius: 0 0 12px 12px; font-size: 20px; font-weight: 500; white-space: nowrap; margin-top: -6px; margin-bottom: 2px; max-width: 360px; overflow: hidden; text-overflow: ellipsis }
+.rib-clock { text-align: center; font-size: 76px; font-weight: 800; color: var(--primary, var(--navy)); line-height: 1; font-variant-numeric: tabular-nums; letter-spacing: 1px }
+.rib-clock span { font-size: 30px; vertical-align: top; margin-inline-start: 6px; color: #5c6d80 }
+.rib-side { font-size: 27px; color: #2b3a4a; line-height: 1.25; font-weight: 500 }
+.rib-side.right { text-align: right }
+.rib-side.left { text-align: left }
+.rib-side small { display: block; color: var(--maroon); font-weight: 700; font-size: 24px }
+.rib-side b { color: var(--maroon); font-size: 32px }
+
+/* ---------- content area */
+.content { position: absolute; top: 162px; bottom: 98px; left: 58px; right: 58px; z-index: 2; animation: enter .7s ease both }
+.content.t-clock { top: 48px }
+@keyframes enter { from { opacity: 0; transform: translateY(14px) } }
+.empty-screen { height: 100%; display: grid; place-items: center; color: #fff; font-size: 48px; text-align: center; text-shadow: 0 2px 10px rgba(0, 0, 0, .5) }
+.panel { background: linear-gradient(180deg, var(--cream) 0%, var(--cream-2) 100%); border-radius: 28px; padding: 30px 44px 34px; position: relative; overflow: hidden;
+  box-shadow: 0 22px 50px rgba(0, 0, 0, .35), inset 0 0 0 2px rgba(201, 164, 92, .75), inset 0 0 0 9px rgba(255, 255, 255, .45); display: flex; flex-direction: column; min-height: 0 }
+.panel-title { text-align: center; font-family: 'Frank Ruhl Libre', serif; font-weight: 700; font-size: 58px; color: var(--maroon); margin-bottom: 18px; line-height: 1.15 }
+.panel-title span { display: inline-block; padding: 0 30px 8px; background: linear-gradient(90deg, transparent, var(--gold), transparent) bottom / 100% 3px no-repeat }
+.fitbox { flex: 1; min-height: 0; overflow: hidden; line-height: 1.45 }
+.muted-line { color: #6c7684; font-size: 34px; text-align: center }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; height: 100% }
+.grid-2.single { grid-template-columns: 1fr; max-width: 1300px; margin: 0 auto }
+
+/* ---------- zmanim lists */
+.zlist { margin: 0; font-variant-numeric: tabular-nums }
+.zlist > div { display: flex; align-items: baseline; gap: 14px; padding: 7px 4px; border-bottom: 2px dotted rgba(140, 110, 60, .35) }
+.zlist > div:last-child { border-bottom: 0 }
+.zlist dt { font-size: 40px; font-weight: 500; flex: 1 }
+.zlist dd { margin: 0; font-size: 46px; font-weight: 800; color: var(--primary, var(--navy)) }
+.zlist.small dt { font-size: 34px } .zlist.small dd { font-size: 36px }
+.zlist.big dt { font-size: 46px } .zlist.big dd { font-size: 54px }
+.grid-zmanim { display: grid; grid-template-columns: 1.15fr 1fr; gap: 40px; height: 100% }
+.zm-main .zlist dt, .zm-main .zlist dd { font-size: 1em }
+.zm-main .zlist dd { font-size: 1.1em }
+.two-cols .zlist { display: grid; grid-template-columns: 1fr 1fr; column-gap: 50px }
+.two-cols .zlist > div:nth-last-child(2) { border-bottom: 0 }
+.zm-side { display: flex; flex-direction: column; gap: 30px; min-height: 0 }
+.zm-side .panel { flex: 1 }
+.zm-side .panel:first-child { flex: 0 0 auto }
+.bullets { margin: 0; padding-inline-start: 1.1em }
+.bullets li { margin-bottom: .25em }
+.bullets li::marker { color: var(--gold) }
+
+/* ---------- clock screen */
+.clock-screen { display: grid; grid-template-columns: 1fr 470px; gap: 40px; height: 100%; align-items: center }
+.clock-disc { width: 900px; height: 900px; margin: 0 auto; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 26px;
+  background: radial-gradient(circle at 50% 40%, #ffffff 0%, #f6f1e4 55%, #e3d8bf 100%);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, .45), inset 0 0 0 14px rgba(255, 255, 255, .55), inset 0 0 0 18px rgba(201, 164, 92, .6) }
+.clock-date { font-size: 54px; font-weight: 700; color: var(--primary, var(--navy)); text-align: center; max-width: 760px; line-height: 1.2 }
+.clock-time { font-size: 290px; font-weight: 800; color: var(--maroon); line-height: .9; font-variant-numeric: tabular-nums; letter-spacing: -4px; direction: ltr; display: flex; align-items: flex-start }
+.clock-sec { font-size: 84px; margin-inline-start: 10px; margin-top: 22px; color: #9d5160; letter-spacing: 0 }
+.clock-zmanim { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 34px; font-size: 46px; font-weight: 700; color: var(--primary, var(--navy)); max-width: 780px }
+.clock-zmanim b { font-variant-numeric: tabular-nums }
+.warn-line { color: var(--maroon); font-size: 30px; max-width: 640px; text-align: center }
+.side { background: linear-gradient(180deg, #fffaf0, #f2e2bc); border-radius: 22px; padding: 22px 26px; height: 100%; max-height: 980px; overflow: hidden;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, .35), inset 0 0 0 2px rgba(201, 164, 92, .7); font-size: 28px; display: flex; flex-direction: column }
+.side-parsha { font-family: 'Frank Ruhl Libre', serif; font-size: 50px; font-weight: 700; color: var(--maroon); text-align: center; border-bottom: 3px solid var(--gold); padding-bottom: 8px; margin-bottom: 8px }
+.side-holiday { text-align: center; font-weight: 700; color: var(--primary, var(--navy)); font-size: 32px }
+.side h3 { font-size: 30px; color: var(--primary, var(--navy)); margin: 14px 0 6px; font-weight: 800 }
+.side ul { list-style: none; padding: 0; margin: 0 }
+.side li { padding: 4px 0; border-bottom: 1px dashed rgba(140, 110, 60, .4); line-height: 1.3 }
+.side .zlist dt { font-size: 28px } .side .zlist dd { font-size: 30px }
+.side .zlist > div { padding: 3px 0 }
+
+/* ---------- prayers */
+.ptable { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums }
+.ptable th, .ptable td { padding: .28em .2em; border-bottom: 2px dotted rgba(140, 110, 60, .35); text-align: right; font-weight: 500 }
+.ptable td { text-align: left; font-weight: 800; color: var(--primary, var(--navy)); font-size: 1.12em; white-space: nowrap }
+.ptable small { font-size: .62em; color: #6c7684; font-weight: 400; display: block }
+.ptable tr:last-child th, .ptable tr:last-child td { border-bottom: 0 }
+
+/* ---------- announcements */
+.ann-grid { display: grid; gap: 40px; height: 100%; position: relative }
+.ann-grid.n1 { grid-template-columns: 1fr } .ann-grid.n2 { grid-template-columns: 1fr 1fr } .ann-grid.n3 { grid-template-columns: 1fr 1fr 1fr }
+.ann .panel-title { font-size: 52px }
+.ann-body { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 20px }
+.ann-body.with-img { flex-direction: row }
+.ann-img { max-width: 42%; max-height: 100%; object-fit: contain; border-radius: 14px; box-shadow: 0 6px 18px rgba(0, 0, 0, .25); align-self: flex-start }
+.rich p { margin: 0 0 .45em }
+.rich .center { text-align: center }
+.rich .c-gold { color: #a87a22 } .rich .c-red { color: #a61e2c } .rich .c-blue { color: #1d4f8f } .rich .c-green { color: #2e6d3a }
+.rich .big { font-size: 1.3em } .rich .huge { font-size: 1.7em }
+.rich ul { margin: 0; padding-inline-start: 1.2em }
+.dots { position: absolute; bottom: -34px; left: 50%; transform: translateX(-50%); display: flex; gap: 12px }
+.dots span { width: 14px; height: 14px; border-radius: 50%; background: rgba(255, 255, 255, .4) }
+.dots span.on { background: var(--gold) }
+
+/* ---------- halacha */
+.parchment { height: 100%; padding: 46px 90px 30px; background:
+  radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, .7), transparent 60%), linear-gradient(180deg, #fff8e6 0%, #f1dfb3 100%) }
+.halacha-title { text-align: center; font-family: 'Frank Ruhl Libre', serif; font-size: 66px; color: var(--maroon); margin-bottom: 22px; font-weight: 700 }
+.halacha-text { text-align: center; line-height: 1.55; color: #1b2a3a; font-weight: 500 }
+.halacha-text p { color: var(--primary, #183a63) }
+.attrib { text-align: center; font-size: 24px; color: #6b5a3a; margin-top: 12px }
+.sample { background: #b3261e; color: #fff; border-radius: 8px; padding: 2px 12px; margin-inline-end: 14px; font-weight: 700 }
+
+/* ---------- memorials */
+.memorials { height: 100%; display: flex; flex-direction: column; gap: 22px }
+.mem-head { display: flex; align-items: center; justify-content: center; gap: 30px; color: #fff }
+.mem-head h1 { font-family: 'Frank Ruhl Libre', serif; font-size: 70px; color: var(--gold-2); text-shadow: 0 3px 12px rgba(0, 0, 0, .5) }
+.candle { width: 22px; height: 62px; background: linear-gradient(90deg, #f6efe0, #fff, #e7dcc4); border-radius: 4px; position: relative; margin-top: 30px }
+.candle::before { content: ''; position: absolute; top: -34px; left: 50%; width: 20px; height: 32px; transform: translateX(-50%); border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  background: radial-gradient(ellipse at 50% 70%, #fff7c2 0%, #ffcf4a 40%, #ff8a1e 75%, transparent 76%); animation: flicker 1.8s infinite alternate; filter: drop-shadow(0 0 12px #ffb347) }
+@keyframes flicker { 50% { transform: translateX(-50%) scale(.94, 1.05) rotate(-2deg) } 100% { transform: translateX(-50%) scale(1.03, .97) rotate(2deg) } }
+.mem-week { flex: 0 0 auto }
+.mem-week .panel-title { font-size: 44px; margin-bottom: 8px }
+.mem-week ul { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 40px; font-size: 34px }
+.mem-week li { display: flex; justify-content: space-between; gap: 16px; border-bottom: 2px dotted rgba(140, 110, 60, .35) }
+.mem-week li span { color: var(--maroon); white-space: nowrap }
+.mem-list, .mem-cards, .mem-tree { flex: 1; min-height: 0; display: grid; gap: 16px 30px; align-content: start }
+.mem-list { grid-template-columns: 1fr 1fr; background: linear-gradient(180deg, var(--cream), var(--cream-2)); border-radius: 26px; padding: 26px 40px; box-shadow: 0 22px 50px rgba(0, 0, 0, .35), inset 0 0 0 2px rgba(201, 164, 92, .7) }
+.mem-list .mem-item { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; font-size: 34px; border-bottom: 2px dotted rgba(140, 110, 60, .35); padding: 6px 0 }
+.mem-item small { color: #6b5a3a; font-size: .72em; white-space: nowrap }
+.mem-cards { grid-template-columns: repeat(3, 1fr) }
+.mem-cards .mem-item, .mem-tree .mem-item { background: linear-gradient(180deg, var(--cream), var(--cream-2)); border-radius: 20px; padding: 22px; text-align: center; display: flex; flex-direction: column; gap: 6px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .3), inset 0 0 0 2px rgba(201, 164, 92, .7); font-size: 34px }
+.mem-tree { grid-template-columns: repeat(4, 1fr); gap: 14px }
+.mem-tree .mem-item { font-size: 26px; padding: 12px 14px; border-radius: 40px 6px 40px 6px; background: linear-gradient(135deg, #f7ecd0, #e2c98e) }
+.leaf { width: 26px; height: 26px; margin: 0 auto; background: linear-gradient(135deg, #c9a45c, #8a6a2c); border-radius: 0 60% 0 60% }
+.mem-foot { text-align: center; color: var(--gold-2); font-family: 'Frank Ruhl Libre', serif; font-size: 40px; letter-spacing: .2em }
+
+/* ---------- sponsors / birthdays */
+.sponsors { display: grid; grid-template-columns: repeat(auto-fit, minmax(700px, 1fr)); gap: 36px; height: 100%; align-content: center }
+.sponsor .panel-title { font-size: 50px }
+.sp-item { text-align: center; padding: 10px 0; border-bottom: 2px dotted rgba(140, 110, 60, .35) }
+.sp-item:last-child { border: 0 }
+.sp-text { font-family: 'Frank Ruhl Libre', serif; font-size: 52px; font-weight: 700; color: var(--primary, var(--navy)) }
+.sp-by { font-size: 32px; color: #6b5a3a }
+.birthdays { text-align: center; justify-content: center }
+.festive { font-family: 'Frank Ruhl Libre', serif; font-size: 120px; color: var(--maroon) }
+.birthdays ul { list-style: none; padding: 0; margin: 20px 0 0; font-size: 60px }
+.birthdays li { display: flex; flex-direction: column; margin-bottom: 18px }
+.birthdays li span { font-size: 38px; color: #6b5a3a }
+
+/* ---------- hilula: two automatic layouts (navy, gold, cream) */
+.hilula { height: 100%; display: grid; grid-template-columns: 1fr; gap: 30px }
+.hilula.has-side { grid-template-columns: 1fr 360px }
+.hilula.pending { opacity: 0 }
+.h-frame { position: relative; height: 100%; min-height: 0; border-radius: 22px; padding: 30px 56px 22px; display: flex; flex-direction: column; gap: 18px; overflow: hidden; color: #f7f0df;
+  background: radial-gradient(ellipse at 50% 25%, #1f4466 0%, #0d223a 65%, #071324 100%); border: 2px solid #a98b50; box-shadow: 0 24px 60px rgba(0, 0, 0, .5) }
+.h-frame::before { content: ''; position: absolute; inset: 12px; border: 1px solid rgba(201, 164, 92, .45); border-radius: 14px; pointer-events: none }
+.h-header { text-align: center; flex-shrink: 0 }
+.eyebrow { color: #d8bd7e; letter-spacing: .14em; font-size: 28px }
+.h-header h1 { font-family: 'Frank Ruhl Libre', serif; font-weight: 700; font-size: 72px; color: #fff3d7; margin: 2px 0; line-height: 1.1 }
+.no-image .h-header h1 { font-size: 88px }
+.h-meta { color: #d8bd7e; font-size: 28px }
+.rule { height: 2px; width: 32%; margin: 12px auto 0; background: linear-gradient(90deg, transparent, #c8a66a, transparent) }
+.h-main { flex: 1; min-height: 0; display: grid; gap: 4%; align-items: stretch }
+.h-main.full { display: flex; flex-direction: column; gap: 22px; padding: 0 4%; text-align: center }
+.portrait { margin: 0; border: 2px solid #bc9b62; padding: 12px; background: #122c43; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 0; box-shadow: 0 0 0 7px rgba(188, 155, 98, .12) }
+.portrait img { width: 100%; height: 100%; min-height: 0; object-fit: contain; flex: 1 }
+.portrait figcaption { font-size: 18px; color: #bfa979; margin-top: 6px }
+.h-content { min-height: 0; display: flex; flex-direction: column; gap: 22px }
+.h-sec { display: flex; flex-direction: column; min-height: 0 }
+.h-sec:first-child { flex: 1.35 }
+.h-sec.teaching { flex: 1; background: rgba(255, 255, 255, .05); border-right: 5px solid #d1ac67; padding: 14px 24px; border-radius: 6px }
+.no-image .h-sec.teaching { border-right: 0; border-top: 2px solid #b89760; border-bottom: 2px solid #b89760; border-radius: 0 }
+.h-sec h2 { font-size: 36px; color: #e1bf7c; margin-bottom: 6px; font-weight: 700 }
+.no-image .h-sec h2 { font-size: 40px }
+.h-bio, .h-teach { line-height: 1.5 }
+.h-teach p { font-family: 'Frank Ruhl Libre', serif; color: #fff3d7 }
+.h-sec cite { font-style: normal; color: #bfa979; font-size: 22px; margin-top: 4px }
+.cont { color: #d8bd7e; font-size: .7em }
+.h-foot { text-align: center; color: #bfa979; font-size: 24px; flex-shrink: 0 }
+.h-side { max-height: none }
+.h-side h3 { font-family: 'Frank Ruhl Libre', serif; text-align: center; color: var(--maroon); font-size: 38px; border-bottom: 3px solid var(--gold); padding-bottom: 8px }
+.h-side li { display: flex; flex-direction: column; padding: 8px 0 }
+.h-side li span { color: var(--maroon); font-size: 24px }
+
+/* ---------- shabbat / combined */
+.holiday-line { text-align: center; font-size: 40px; font-weight: 700; color: var(--maroon); margin-bottom: 10px }
+.combined { display: grid; grid-template-columns: 1fr 1.2fr; grid-template-rows: 1fr 1fr; gap: 30px; height: 100% }
+.c-clock { align-items: center; justify-content: center; text-align: center }
+.c-time { font-size: 130px; font-weight: 800; color: var(--maroon); line-height: 1; font-variant-numeric: tabular-nums }
+.c-date { font-size: 36px; font-weight: 700; color: var(--primary, var(--navy)); margin: 8px 0 12px }
+.c-z { display: flex; gap: 10px 30px; flex-wrap: wrap; justify-content: center; font-size: 32px }
+.c-z b { color: var(--primary, var(--navy)); font-variant-numeric: tabular-nums }
+.combined .panel-title { font-size: 44px; margin-bottom: 8px }
+
+/* ---------- footer plaque, status, progress */
+.plaque-row { position: absolute; bottom: 26px; left: 58px; right: 58px; height: 62px; z-index: 6; display: flex; justify-content: center; align-items: center }
+.plaque { max-width: 1400px; padding: 8px 60px; font-family: 'Frank Ruhl Libre', serif; font-weight: 700; font-size: 32px; color: #3a2a0c; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  background: linear-gradient(135deg, #8c6a2f 0%, #e9cf8a 28%, #b48a3f 50%, #f2dc9c 72%, #9a7536 100%); border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .45), inset 0 0 0 2px rgba(255, 240, 200, .6), inset 0 0 0 5px rgba(90, 64, 20, .35); animation: enter .8s ease both; text-shadow: 0 1px 0 rgba(255, 245, 210, .6) }
+.offline { position: absolute; left: 0; bottom: 6px; background: rgba(0, 0, 0, .55); color: #ffd27a; font-size: 18px; padding: 4px 14px; border-radius: 10px }
+.preview-tag { position: absolute; right: 0; bottom: 6px; background: #b3261e; color: #fff; font-size: 20px; padding: 4px 14px; border-radius: 10px }
+.progress { position: absolute; bottom: 16px; left: 16px; right: 16px; height: 5px; background: var(--accent, var(--gold)); transform-origin: right; z-index: 21; opacity: .85; transition: transform 1s linear }
+
+/* ---------- maintenance / pairing (no invented data, the clock keeps running) */
+.maintenance { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 30px; color: #fff; text-align: center }
+.m-time { font-size: 260px; font-weight: 800; font-variant-numeric: tabular-nums; text-shadow: 0 6px 30px rgba(0, 0, 0, .5) }
+.m-note h1 { font-size: 64px; color: var(--gold-2) }
+.m-note p { font-size: 36px; max-width: 1300px; opacity: .9; margin-top: 12px }
