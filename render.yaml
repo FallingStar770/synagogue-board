@@ -1,0 +1,36 @@
+# Render Blueprint — Dashboard → New → Blueprint → choose this repository.
+# Creates: web service (API + admin + TV display, automatic HTTPS) and a PostgreSQL database.
+# You will be asked for ADMIN_PASSWORD (first administrator). Region: Frankfurt (closest to Israel).
+services:
+  - type: web
+    name: synagogue-board
+    runtime: docker
+    dockerfilePath: ./Dockerfile.render
+    dockerContext: .
+    plan: starter            # free also works for trying it out: sleeps after 15 min idle, see docs/RENDER.md
+    region: frankfurt
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: synagogue-db
+          property: connectionString
+      - key: ADMIN_USERNAME
+        value: admin
+      - key: ADMIN_PASSWORD
+        sync: false          # entered once in the Render dashboard, never stored in Git
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: ENVIRONMENT
+        value: production
+      - key: SEED_DEMO
+        value: "false"       # "true" adds clearly-marked sample content for a first look
+
+databases:
+  - name: synagogue-db
+    plan: basic-256mb        # the free database is deleted by Render after 30 days
+    region: frankfurt
+    databaseName: synagogue
+    user: synagogue
+    postgresMajorVersion: "16"
